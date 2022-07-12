@@ -2,29 +2,39 @@ import axios from "axios";
 import React, {useState, useEffect} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const endpoint = 'http://localhost:8000/api/v1/category/'
+const endpoint = 'http://127.0.0.1:8000/api/v1/categoria/'
+const headers = { 
+    'Content-Type': 'application/json', 
+    'Accept': 'application/json', 
+    'Authorization': 'Bearer 2|HQumHfQ0PQXXscc9tBDjr3xOWCe0uRhkGD65Galv'
+};
 
 export const Edit = () => { 
-    const [name, setName] = useState('')
-    const [description, setDescription] = useState('')
-    const [state, setState] = useState(0)
+    const [nombre, setNombre] = useState('')
+    const [in_estado, setIn_Estado] = useState('')
     const navigate = useNavigate()
     const {id} = useParams()
 
     const update = async (e) => {
         e.preventDefault()
-        await axios.put(`${endpoint}${id}`, {
-            name:name,  description:description, state:state
-        })
+        await axios.put(`${endpoint}${id}`, 
+                {
+                    nombre:nombre,  
+                    in_estado: in_estado
+                },
+                {
+                    headers
+                });
         navigate('/category')
     }
     
     useEffect( () =>{
         const getCategoryById = async () => {
-            const response = await axios.get(`${endpoint}${id}`)
-            setName(response.data.name)
-            setDescription(response.data.description)
-            setState(response.data.state)
+            let response = await axios.get(`${endpoint}${id}`,{headers});
+            response = response.data.data;
+            console.log(response.nombre);
+            setNombre(response.nombre);
+            setIn_Estado(response.in_estado);
         }
         getCategoryById()
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -32,20 +42,20 @@ export const Edit = () => {
 
     return (
         <div>
-        <h3>Edit Category</h3>
+        <h3>Editar Categoria</h3>
         <form onSubmit={update}>
 
         <div className='mb-3'>
-                <label className='form-label'>Name</label>
+                <label className='form-label'>Nombre</label>
                 <input 
-                    value={name}
-                    onChange={ (e)=> setName(e.target.value)}
+                    value={nombre}
+                    onChange={ (e)=> setNombre(e.target.value)}
                     type='text'
                     className='form-control'
                 />
             </div>
 
-            <div className='mb-3'>
+            {/* <div className='mb-3'>
                 <label className='form-label'>Description</label>
                 <input 
                     value={description}
@@ -53,18 +63,18 @@ export const Edit = () => {
                     type='text'
                     className='form-control'
                 />
-            </div>
+            </div> */}
             
             <div className='mb-3'>
-                <label className='form-label'>State</label>
+                <label className='form-label'>Estado</label>
                 <input 
-                    value={state}
-                    onChange={ (e)=> setState(e.target.value)}
+                    value={in_estado}
+                    onChange={ (e)=> setIn_Estado(e.target.value)}
                     type='number'
                     className='form-control'
                 />
             </div>
-            <button type='submit' className='btn btn-primary'>Update</button>
+            <button type='submit' className='btn btn-primary'>Actualizar</button>
         </form>
     </div>
     )
